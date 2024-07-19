@@ -97,8 +97,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# path = "E:\Test\"
-# id = "068056e727fecabf8d8d00c93cfb798d2a98f3ae00e701e56401b19f7cdf4d6b-1721246434"
-# data = GetVTScanResult(id)
-# print(isDangerous(data))
