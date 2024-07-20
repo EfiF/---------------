@@ -45,10 +45,12 @@ def GetVTScanResult(id):
 
 # Checks if the file is dangerous according to it's data
 def isDangerous(data):
-    if data['positives'] > 0:
-        return True
-    else:
-        return False
+    return data['positives'] > 0
+    
+def GetFileSizeInKB(file_path):
+    size_in_bytes = os.path.getsize(file_path)
+    return size_in_bytes
+
 
 def main():
     # Welcome message
@@ -58,14 +60,13 @@ def main():
     time.sleep(1.5)
 
     # The user enters the path he wants to scan
-
     path = input("Enter the path of the file you want to scan: ")
 
     # Wait 0.7 seconds to display the next line
     time.sleep(0.7)
 
     # The files that are in the folder path
-    file_list = GetAllFilesInPath(path)\
+    file_list = GetAllFilesInPath(path)
     
     print("These are the files that are going to be scanned (each file takes approximately 15 seconds to be fully scanned):")
 
@@ -79,8 +80,11 @@ def main():
     print("Results: ")
 
     for file in file_list:
-        # Wait 15 seconds in order to complete a safe scan
+        # Wait until the file is done scanning
+        
         time.sleep(15)
+
+        # Get the id of the scanned file
         id = GetVirusTotalIDReport(file)
         if id:
             data = GetVTScanResult(id)
@@ -91,6 +95,8 @@ def main():
                 print(f"Error retrieving data for {FileName(file)}")
         else:
             print(f"Error scanning {FileName(file)}")
+
+    time.sleep(1)
 
     print("Thank you for using Efi's virus scanner! Have a nice day!")
 
