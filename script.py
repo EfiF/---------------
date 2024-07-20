@@ -1,12 +1,18 @@
-import os
 import requests
+import threading
 import time
+import os
 import json
 
-def FileName(path):
-    return os.path.basename(path)
+url = 'https://www.virustotal.com/vtapi/v2/file/scan'
+api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
 
-def GetAllFilesInPath(path): # פונקציה המקבלת כתובת של תיקייה ומחזירה את כל הקבצים שנמצאים בתוך התיקייה כולל בתוך התיקיות שבתוך אותה תיקייה
+# Gets a file path and returns his name + extension
+def File_Name(file_path):
+    return os.path.basename(file_path)
+
+# Organizes each file that was found in the path to a list
+def Get_All_Files_In_Path(path): 
     file_list = []
     
     for root, dirs, files in os.walk(path):
@@ -15,91 +21,76 @@ def GetAllFilesInPath(path): # פונקציה המקבלת כתובת של תי�
 
     return file_list
 
-# Returs the id of a file scan
-def GetVirusTotalIDReport(file_path):
-    url = 'https://www.virustotal.com/vtapi/v2/file/scan'
-    api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
+# Scans the file
+def Scan_File(file_path, api_key, url):
+    files = {'file': (file_path, open(file_path, 'rb'))}
+    params = {'apikey': api_key}
+    response = requests.post(url, files=files, params=params)
+    return response
 
-    with open(file_path, 'rb') as f:
-        files = {'file': f}
-        response = requests.post(url, files=files, params={'apikey': api_key})
-        data = response.json()
-        id = data['scan_id']
-        return id
+# Returns the ID of the scan
+def Scan_Id(response):
+    return response.json()['scan_id']
 
-# Returns the full result of a file scan according to it's id
-def GetVTScanResult(id):
-    url = 'https://www.virustotal.com/vtapi/v2/file/report'
-    api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
+# Gets the result of the scan
+def Get_Scan_Result(scan_id):
+    params = {'apikey': api_key, 'resource': scan_id}
+    response = requests.get('https://www.virustotal.com/vtapi/v2/file/report', params=params)
+    return response
 
-    params = {'apikey': api_key, 'resource': id}
-    response = requests.get(url, params=params)
 
+# Checks if the file is dangerous
+def Is_Dangerous(response):
     try:
-        data = response.json()
-    except json.decoder.JSONDecodeError:
-        print(f"Error decoding JSON data for ID: {id}")
-        return None
-
-    return data
-
-# Checks if the file is dangerous according to it's data
-def isDangerous(data):
-    return data['positives'] > 0
-    
-def GetFileSizeInKB(file_path):
-    size_in_bytes = os.path.getsize(file_path)
-    return size_in_bytes
+        json_response = response.json()
+        return json_response.get('positives', 0) > 0
+    except ValueError:
+        print("Error retrieving value MIGHT NOT BE ACCURATE")
+        return False
 
 
 def main():
-    # Welcome message
-    print("Welcome to Efi's virus scanner")
+    time.sleep(0.6)
+    print("Welcome to Efi's new AntiVirus")
 
-    # Wait 1.5 seconds to display the next line
-    time.sleep(1.5)
-
-    # The user enters the path he wants to scan
-    path = input("Enter the path of the file you want to scan: ")
-
-    # Wait 0.7 seconds to display the next line
     time.sleep(0.7)
+    folder_path = input("Enter the path of the folder to scan: ")
 
-    # The files that are in the folder path
-    file_list = GetAllFilesInPath(path)
-    
-    print("These are the files that are going to be scanned (each file takes approximately 15 seconds to be fully scanned):")
+    time.sleep(0.7)
+    print("These are the files that will be scanned: ")
 
-    # Wait 1.5 seconds to display the next line
-    time.sleep(1.5)
-    for file in file_list:
-        print(FileName(file))
-        time.sleep(0.8)
-    
-    time.sleep(0.8)
-    print("Results: ")
-
-    for file in file_list:
-        # Wait until the file is done scanning
-        
-        time.sleep(15)
-
-        # Get the id of the scanned file
-        id = GetVirusTotalIDReport(file)
-        if id:
-            data = GetVTScanResult(id)
-            if data:
-                msg = "is dangerous" if isDangerous(data) else "is not dangerous"
-                print(f"{FileName(file)} {msg}")
-            else:
-                print(f"Error retrieving data for {FileName(file)}")
-        else:
-            print(f"Error scanning {FileName(file)}")
+    time.sleep(0.7)
+    for file_path in Get_All_Files_In_Path(folder_path):
+        time.sleep(0.5)
+        print(File_Name(file_path))
 
     time.sleep(1)
+    print("Scanning files...")
 
-    print("Thank you for using Efi's virus scanner! Have a nice day!")
+    time.sleep(0.7)
+    for file_path in Get_All_Files_In_Path(folder_path):
+        
+        response = Scan_File(file_path, api_key, url)
+        
+        id = Scan_Id(response)
 
+        response = Get_Scan_Result(id)
+
+        if Is_Dangerous(response):
+            print(f"The following file is malicious: {File_Name(file_path)}")
+        else:
+            print(f"{File_Name(file_path)} is safe")
+        
+        # Wait 5 seconds between each scan to avoid bugs
+        time.sleep(5)
+
+    time.sleep(1.2)
+    print("Thank you for using Efi's new AntiVirus")
+
+    rating = int(input("Please rate the program from 1 to 5: "))
+    
+    time.sleep(0.7)
+    print("Thank you for your feedback!")
 
 if __name__ == "__main__":
     main()
