@@ -5,7 +5,8 @@ import colorama
 from colorama import Fore
 
 url = 'https://www.virustotal.com/vtapi/v2/file/scan'
-api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
+# Insert your api_key here:
+api_key = ""
 
 # Gets a file path and returns his name + extension
 def File_Name(file_path):
