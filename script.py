@@ -1,6 +1,8 @@
 import requests
 import time
 import os
+import colorama
+from colorama import Fore
 
 url = 'https://www.virustotal.com/vtapi/v2/file/scan'
 api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
@@ -56,18 +58,18 @@ def main():
     print("Welcome to Efi's new AntiVirus")
 
     time.sleep(0.7)
-    folder_path = input("Enter the path of the folder to scan: ")
+    folder_path = input(Fore.BLUE + "Enter the path of the folder to scan: ")
 
     time.sleep(0.7)
-    print("These are the files that will be scanned: ")
+    print(Fore.MAGENTA + "These are the files that will be scanned: ")
 
     time.sleep(0.7)
     for file_path in Get_All_Files_In_Path(folder_path):
         time.sleep(0.5)
-        print(File_Name(file_path))
+        print(Fore.WHITE + File_Name(file_path))
 
     time.sleep(1)
-    print("Scanning files...")
+    print(Fore.GREEN + "Scanning files...")
 
     time.sleep(0.7)
     for file_path in Get_All_Files_In_Path(folder_path):
@@ -79,22 +81,28 @@ def main():
         response = Get_Scan_Result(id)
 
         if Is_Dangerous(response):
-            print(f"The following file is malicious: {File_Name(file_path)}")
+            print(Fore.RED +  f"The following file is malicious: '{File_Name(file_path)}'")
         else:
-            print(f"{File_Name(file_path)} is safe")
+            print(Fore.GREEN + f"'{File_Name(file_path)}' is safe")
         
         # Wait 5 seconds between each scan to avoid bugs
         time.sleep(5)
 
     time.sleep(1.2)
-    print("Thank you for using Efi's new AntiVirus")
+    print(Fore.LIGHTMAGENTA_EX + "Thank you for using Efi's new AntiVirus")
 
-    rating = int(input("Please rate the program from 1 to 5: "))
+    time.sleep(0.7)
+
+    rating = int(input(Fore.LIGHTBLUE_EX + "Please rate the program from 1 to 5: "))
     while rating < 1 or rating > 5:
-        rating = int(input("Please enter a number between 1 and 5: "))
+        rating = int(input(Fore.LIGHTBLUE_EX + "Please enter a number between 1 and 5: "))
         
     time.sleep(0.7)
-    print("Thank you for your feedback!")
+    print(Fore.YELLOW + "Thank you for your feedback!")
+
+    # Reset the color
+    Fore.RESET
+
 
 if __name__ == "__main__":
     main()
