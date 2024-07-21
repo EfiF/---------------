@@ -86,8 +86,8 @@ def main():
         else:
             print(Fore.GREEN + f"'{File_Name(file_path)}' is safe")
         
-        # Wait 5 seconds between each scan to avoid bugs
-        time.sleep(5)
+        # Wait 10 seconds between each scan to avoid bugs
+        time.sleep(10)
 
     time.sleep(1.2)
     print(Fore.LIGHTMAGENTA_EX + "Thank you for using Efi's new AntiVirus")
