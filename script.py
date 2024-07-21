@@ -1,8 +1,6 @@
 import requests
-import threading
 import time
 import os
-import json
 
 url = 'https://www.virustotal.com/vtapi/v2/file/scan'
 api_key = "33bf4c556085a65ebb483f6fc26ab1e5386f6ed7502c9d3ca948bb4d80f9f7cb"
@@ -45,8 +43,12 @@ def Is_Dangerous(response):
         json_response = response.json()
         return json_response.get('positives', 0) > 0
     except ValueError:
-        print("Error retrieving value MIGHT NOT BE ACCURATE")
-        return False
+        # If an error has occured, wait 10 seconds and then try again
+        print("An error has occured. Rescanning the file...")
+        time.sleep(10)
+
+        # Calls the function again in order to get a response
+        return Is_Dangerous(response)
 
 
 def main():
@@ -88,7 +90,9 @@ def main():
     print("Thank you for using Efi's new AntiVirus")
 
     rating = int(input("Please rate the program from 1 to 5: "))
-    
+    while rating < 1 or rating > 5:
+        rating = int(input("Please enter a number between 1 and 5: "))
+        
     time.sleep(0.7)
     print("Thank you for your feedback!")
 
