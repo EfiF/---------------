@@ -99,10 +99,7 @@ def main():
         rating = int(input(Fore.LIGHTBLUE_EX + "Please enter a number between 1 and 5: "))
         
     time.sleep(0.7)
-    print(Fore.YELLOW + "Thank you for your feedback!")
-
-    # Reset the color
-    Fore.RESET
+    print(Fore.YELLOW + "Thank you for your 
 
 
 if __name__ == "__main__":
